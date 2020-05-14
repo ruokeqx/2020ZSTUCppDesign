@@ -3,7 +3,7 @@
 using namespace std;
 class ExpertDepartment {
 public:
-	string expertName;	//专家姓名
+	string expertName="非专家门诊";	//专家姓名
 	string departmentName;	//科室名称
 	int weekDay;	//日期
 	int aorp;	//上下午

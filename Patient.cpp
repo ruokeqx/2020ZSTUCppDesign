@@ -243,6 +243,8 @@ void Patient::makeAppointment() {
 }
 //查看预约
 void Patient::showAppointment() {
+	if (vForm.empty())
+		cout << "当前没用预约记录！" << endl;
 	for (vector<Form>::iterator it = vForm.begin();it != vForm.end();it++) {
 		if (it->myName == myName) {		//患者查看自己的预约记录
 			cout << "科室名称：" << it->departmentName << "\t患者姓名：" << it->myName << "\t就诊日期：" << it->weekDay << it->aorp << "\t就诊号：" << it->serial << "\t专家姓名：" << it->expertName << endl;
@@ -251,5 +253,74 @@ void Patient::showAppointment() {
 }
 //*取消预约
 void Patient::cancelAppointment() {
+	string toDelete;	//要删除的对应就诊号
+	int flag = 0;	//标记是否删除成功
+	Form t;
+	while (!vForm.empty()) {
+		cout << "你的预约如下：" << endl;
+		this->showAppointment();
+		cout << "请输入你要取消的预约的就诊号：" << endl;
+		while (cin >> toDelete) {
+			for (vector<Form>::iterator it = vForm.begin();it != vForm.end();it++) {
+				if (it->serial == toDelete) {
+					flag = 1;	//标记
+					t = *it;
+					vForm.erase(it);	//刷新容器
+					break;
+				}
+			}
+			if (flag) {
+				cout << "删除成功！" << endl;
+				//刷新电子挂单文件
+				ofstream out(FORM_FILE, ios::trunc);
+				for (vector<Form>::iterator it = vForm.begin();it != vForm.end();it++) {
+					out << it->departmentName << "\t" << it->myName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->serial << "\t" << it->expertName << endl;
+				}
+				out.close();
 
+				//刷新对应门诊预约数量
+				if (t.expertName == "非专家门诊") {
+					//刷新容器
+					for (vector<Department>::iterator it = vDepartmentInfo.begin(); it != vDepartmentInfo.end(); it++) {
+						if (t.departmentName == it->departmentName) {
+							if (t.aorp == 1) {
+								it->aHad[t.weekDay - 1]--;
+							}
+							else {
+								it->pHad[t.weekDay - 1]--;
+							}
+						}
+
+					}
+					//刷新文件
+					ofstream o(COMMON_FILE, ios::trunc);
+					for (vector<Department>::iterator it = vDepartmentInfo.begin();it != vDepartmentInfo.end();it++) {
+						o << it->departmentName << "\t" << it->aMaxNum << "\t" << it->aHad[0] << "\t" << it->aHad[1] << "\t" << it->aHad[2] << "\t" << it->aHad[3] << "\t" << it->aHad[4] << "\t" << it->aHad[5] << "\t" << it->aHad[6] << "\t" << it->pMaxNum << "\t" << it->pHad[0] << "\t" << it->pHad[1] << "\t" << it->pHad[2] << "\t" << it->pHad[3] << "\t" << it->pHad[4] << "\t" << it->pHad[5] << "\t" << it->pHad[6] << endl;
+					}
+					o.close();
+				}
+				else {
+					//刷新容器
+					for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+						if (t.expertName==it->expertName && t.departmentName==it->departmentName && t.weekDay==it->weekDay && t.aorp==it->aorp) {
+							it->nowNum--;
+						}
+					}
+					//刷新文件
+					ofstream o(EXPERT_FILE, ios::trunc);
+					for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+						o << it->expertName << "\t" << it->departmentName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->maxnNum << "\t" << it->nowNum << endl;
+					}
+					o.close();
+				}
+
+				system("pause");
+				return;
+			}
+			else
+				cout << "请输入正确的就诊号：" << endl;
+		}
+	}
+	cout << "你当前还没有任何预约记录！" << endl;
+	this->operate();
 }
