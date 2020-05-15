@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<fstream>
 #include<Windows.h>
+#include<regex>
 using namespace std;
 #include"Admin.h"
 #include"Patient.h"
@@ -18,4 +19,6 @@ public:
 private:
 	//µÇÂ¼
 	void login(int);
+	//×¢²á»¼ÕßÕËºÅ
+	void patientRegiste();
 };

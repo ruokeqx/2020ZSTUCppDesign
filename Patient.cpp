@@ -322,5 +322,5 @@ void Patient::cancelAppointment() {
 		}
 	}
 	cout << "你当前还没有任何预约记录！" << endl;
-	this->operate();
+	this->page();
 }
