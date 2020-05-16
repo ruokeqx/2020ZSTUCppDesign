@@ -16,6 +16,12 @@ public:
 	void chageInfo();
 	//删除科室名称 预约数量
 	void deleteInfo();
+	//添加专家门诊
+	void addExpertInfo();
+	//修改专家门诊
+	void changeExpertInfo();
+	//删除专家门诊
+	void deleteExpertInfo();
 	//查看预约
 	void showAppointment();
 };

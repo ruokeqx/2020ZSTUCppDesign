@@ -22,7 +22,13 @@ void Admin::page() {
 	cout << "\t\t|                                |\n";
 	cout << "\t\t|          4.删除信息            |\n";
 	cout << "\t\t|                                |\n";
-	cout << "\t\t|        5.查看就诊情况          |\n";
+	cout << "\t\t|          5.添加专家            |\n";
+	cout << "\t\t|                                |\n";
+	cout << "\t\t|          6.修改专家            |\n";
+	cout << "\t\t|                                |\n";
+	cout << "\t\t|          7.删除专家            |\n";
+	cout << "\t\t|                                |\n";
+	cout << "\t\t|          8.查看就诊            |\n";
 	cout << "\t\t|                                |\n";
 	cout << "\t\t|          0.注销登录            |\n";
 	cout << "\t\t|                                |\n";
@@ -49,6 +55,15 @@ void Admin::operate() {
 			this->deleteInfo();
 			break;
 		case 5:
+			this->addExpertInfo();
+			break;
+		case 6:
+			this->changeExpertInfo();
+			break;
+		case 7:
+			this->deleteExpertInfo();
+			break;
+		case 8:
 			this->showAppointment();
 			break;
 		case 0:
@@ -136,7 +151,114 @@ void Admin::deleteInfo() {
 			out << it->departmentName << "\t" << it->aMaxNum << "\t" << it->aHad[0] << "\t" << it->aHad[1] << "\t" << it->aHad[2] << "\t" << it->aHad[3] << "\t" << it->aHad[4] << "\t" << it->aHad[5] << "\t" << it->aHad[6] << "\t" << it->pMaxNum << "\t" << it->pHad[0] << "\t" << it->pHad[1] << "\t" << it->pHad[2] << "\t" << it->pHad[3] << "\t" << it->pHad[4] << "\t" << it->pHad[5] << "\t" << it->pHad[6] << endl;
 	out.close();
 }
+//添加专家门诊
+void Admin::addExpertInfo() {
+	ExpertDepartment e;
+	//获取信息
+	cout << "请输入专家姓名：" << endl;
+	cin >> e.expertName;
+	cout << "请输入科室名称：" << endl;
+	cin >> e.departmentName;
+	cout << "请输入坐诊日期：" << endl;
+	cin >> e.weekDay;
+	cout << "请输入上午还是下午：1.上午 2.下午：" << endl;
+	cin >> e.aorp;
+	cout << "请输入最大接诊数量：" << endl;
+	cin >> e.maxnNum;
+	//刷新容器
+	vExpertDepartmentInfo.push_back(e);
+	//刷新文件
+	ofstream out(EXPERT_FILE, ios::trunc);
+	for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+		out << it->expertName << "\t" << it->departmentName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->maxnNum << "\t" << it->nowNum << endl;
+	}
+	out.close();
+}
+//修改专家门诊
+void Admin::changeExpertInfo() {
+	ExpertDepartment e;
+	//获取信息
+	cout << "请输入专家姓名：" << endl;
+	cin >> e.expertName;
+	cout << "请输入科室名称：" << endl;
+	cin >> e.departmentName;
+	cout << "请输入坐诊日期：" << endl;
+	cin >> e.weekDay;
+	cout << "请输入上午还是下午：1.上午 2.下午：" << endl;
+	cin >> e.aorp;
+	cout << "请输入你要修改的最大数量：" << endl;
+	cin >> e.maxnNum;
+	//刷新容器
+	for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+		if (it->expertName == e.expertName && it->departmentName == e.departmentName && it->weekDay == e.weekDay && it->aorp == e.aorp) {
+			it->maxnNum = e.maxnNum;
+			cout << "修改成功！" << endl;
+		}
+	}
+	//刷新文件
+	ofstream out(EXPERT_FILE, ios::trunc);
+	for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+		out << it->expertName << "\t" << it->departmentName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->maxnNum << "\t" << it->nowNum << endl;
+	}
+	out.close();
+}
+//删除专家门诊
+void Admin::deleteExpertInfo() {
+	ExpertDepartment e;
+	//获取信息
+	cout << "请输入专家姓名：" << endl;
+	cin >> e.expertName;
+	cout << "请输入科室名称：" << endl;
+	cin >> e.departmentName;
+	cout << "请输入坐诊日期：" << endl;
+	cin >> e.weekDay;
+	cout << "请输入上午还是下午：1.上午 2.下午：" << endl;
+	cin >> e.aorp;
+	//刷新容器
+	for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+		if (it->expertName == e.expertName && it->departmentName == e.departmentName && it->weekDay == e.weekDay && it->aorp == e.aorp) {
+			vExpertDepartmentInfo.erase(it);
+			cout << "删除成功" << endl;
+			break;
+		}
+	}
+	//刷新文件
+	ofstream out(EXPERT_FILE, ios::trunc);
+	for (vector<ExpertDepartment>::iterator it = vExpertDepartmentInfo.begin();it != vExpertDepartmentInfo.end();it++) {
+		out << it->expertName << "\t" << it->departmentName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->maxnNum << "\t" << it->nowNum << endl;
+	}
+	out.close();
+}
+
+
 //查看预约
 void Admin::showAppointment() {
-
+	string departmentName;
+	int isExpert;
+	int c0 = 0,c1=0;
+	cout << "请输入你要查看的科室名称：" << endl;
+	cin >> departmentName;
+	cout << "请问你要查询普通门诊还是专家门诊：0.普通门诊 1.专家门诊" << endl;
+	cin >> isExpert;
+	cout << "查询结果如下：" << endl;
+	//历遍容器
+	for (vector<Form>::iterator it = vForm.begin();it != vForm.end();it++) {
+		if (it->departmentName == departmentName) {
+			if (isExpert && it->expertName != "非专家门诊") {
+				cout << it->departmentName << "\t" << it->myName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->serial << "\t" << it->expertName << endl;
+				c1++;
+			}
+			else if (!isExpert && it->expertName == "非专家门诊") {
+				cout << it->departmentName << "\t" << it->myName << "\t" << it->weekDay << "\t" << it->aorp << "\t" << it->serial << "\t" << it->expertName << endl;
+				c0++;
+			}
+		}
+	}
+	cout << "查询结束，结果如上!" << endl;
+	if (isExpert) {
+		cout << "专家门诊共：" << c1 << " 单！" << endl;
+	}
+	else {
+		cout<<"普通门诊共："<<c0<< " 单！" << endl;
+	}
 }
